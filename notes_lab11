@@ -1,0 +1,2 @@
+        QString info = student.toString();
+        ui->lbStudentInfo->setText(info);
