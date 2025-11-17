@@ -124,7 +124,7 @@ bool MainWindow::createObject(){
                }
             if(student != nullptr){
                 QString info = student->toString();
-                QMessageBox::information(this, "Успіх", "Об'єкт Student створено! \n"+info, "ok");
+                QMessageBox::information(this, "Успіх", "Об'єкт Student створено! \n"+info);
                 success = true;
             }
         return success;

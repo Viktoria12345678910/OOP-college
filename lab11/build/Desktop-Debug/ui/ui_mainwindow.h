@@ -13,14 +13,12 @@
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFormLayout>
-#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTableView>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -43,17 +41,16 @@ public:
     QLineEdit *lePaternalName;
     QLabel *label_9;
     QLineEdit *leDate;
-    QLabel *label_7;
-    QLineEdit *leAddress;
     QLabel *label_10;
     QLineEdit *lePhoneNumber;
+    QLabel *label_7;
+    QLineEdit *leAddress;
     QLabel *label_6;
     QLineEdit *leFaculty;
     QLabel *label_8;
     QLineEdit *leYear;
     QLabel *label_5;
     QLineEdit *leGroup;
-    QTableView *tableView;
     QMenuBar *menubar;
     QMenu *menu;
     QStatusBar *statusbar;
@@ -123,25 +120,25 @@ public:
 
         formLayout->setWidget(4, QFormLayout::ItemRole::FieldRole, leDate);
 
-        label_7 = new QLabel(centralwidget);
-        label_7->setObjectName("label_7");
-
-        formLayout->setWidget(5, QFormLayout::ItemRole::LabelRole, label_7);
-
-        leAddress = new QLineEdit(centralwidget);
-        leAddress->setObjectName("leAddress");
-
-        formLayout->setWidget(5, QFormLayout::ItemRole::FieldRole, leAddress);
-
         label_10 = new QLabel(centralwidget);
         label_10->setObjectName("label_10");
 
-        formLayout->setWidget(6, QFormLayout::ItemRole::LabelRole, label_10);
+        formLayout->setWidget(5, QFormLayout::ItemRole::LabelRole, label_10);
 
         lePhoneNumber = new QLineEdit(centralwidget);
         lePhoneNumber->setObjectName("lePhoneNumber");
 
-        formLayout->setWidget(6, QFormLayout::ItemRole::FieldRole, lePhoneNumber);
+        formLayout->setWidget(5, QFormLayout::ItemRole::FieldRole, lePhoneNumber);
+
+        label_7 = new QLabel(centralwidget);
+        label_7->setObjectName("label_7");
+
+        formLayout->setWidget(6, QFormLayout::ItemRole::LabelRole, label_7);
+
+        leAddress = new QLineEdit(centralwidget);
+        leAddress->setObjectName("leAddress");
+
+        formLayout->setWidget(6, QFormLayout::ItemRole::FieldRole, leAddress);
 
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName("label_6");
@@ -172,11 +169,6 @@ public:
         leGroup->setObjectName("leGroup");
 
         formLayout->setWidget(9, QFormLayout::ItemRole::FieldRole, leGroup);
-
-        tableView = new QTableView(centralwidget);
-        tableView->setObjectName("tableView");
-
-        formLayout->setWidget(11, QFormLayout::ItemRole::FieldRole, tableView);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
@@ -214,8 +206,8 @@ public:
         label_2->setText(QCoreApplication::translate("MainWindow", "\320\237\321\200\321\226\320\267\320\262\320\270\321\211\320\265:", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "\320\237\320\276-\320\261\320\260\321\202\321\214\320\272\320\276\320\262\321\226:", nullptr));
         label_9->setText(QCoreApplication::translate("MainWindow", "\320\224\320\260\321\202\320\260 \320\275\320\260\321\200\320\276\320\264\320\266\320\265\320\275\320\275\321\217(\320\262 \321\204\320\276\321\200\320\274\320\260\321\202\321\226 \320\264\320\264\320\274\320\274\321\200\321\200):", nullptr));
-        label_7->setText(QCoreApplication::translate("MainWindow", "\320\220\320\264\321\200\320\265\321\201\321\201\320\260", nullptr));
         label_10->setText(QCoreApplication::translate("MainWindow", "\320\235\320\276\320\274\320\265\321\200 \321\202\320\265\320\273\320\265\321\204\320\276\320\275\321\203:", nullptr));
+        label_7->setText(QCoreApplication::translate("MainWindow", "\320\220\320\264\321\200\320\265\321\201\321\201\320\260", nullptr));
         label_6->setText(QCoreApplication::translate("MainWindow", "\320\244\320\260\320\272\321\203\320\273\321\214\321\202\320\265\321\202:", nullptr));
         label_8->setText(QCoreApplication::translate("MainWindow", "\320\240\321\226\320\272 \320\275\320\260\320\262\321\207\320\260\320\275\320\275\321\217:", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "\320\223\321\200\321\203\320\277\320\260:", nullptr));
