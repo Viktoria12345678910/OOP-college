@@ -1,10 +1,4 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include "student.h"
-
-Student::Student()
-{
-}
 
 Student::Student(
         QString id,
@@ -16,19 +10,13 @@ Student::Student(
         QString phoneNumber,
         QString year,
         QString group,
-        QString faculty) :id(id), firstName(firstName), lastName(lastName), paternalName(paternalName), date(date), addres(addres), phoneNumber(phoneNumber), year(year),
-group(group),
-faculty(faculty){
+        QString faculty) :id(id), firstName(firstName), lastName(lastName), paternalName(paternalName), date(date), addres(addres), phoneNumber(phoneNumber), faculty(faculty),
+year(year),
+group(group){
 
 }
+Student::Student() : id("0") {}
 
-
-QString Student::toString(){
-    QString studentInfo = "Nothing is here";
-    studentInfo ="First name: "+firstName+"\nLast name: "+lastName+"\nPaternal name: "+paternalName+"\nDate of birth: "+date+"\nPhone number: "+phoneNumber+"\nHome address:"+addres+"\nFaculty: "+faculty+" on year "+year+"\nGroup "+group+"\n";
-    return studentInfo;
-}
-// Геттери
 QString Student::getId() const { return id; }
 QString Student::getFirstName() const { return firstName; }
 QString Student::getLastName() const { return lastName; }
@@ -51,3 +39,10 @@ void Student::setPhoneNumber(const QString &phoneNumber) { this->phoneNumber = p
 void Student::setFaculty(const QString &faculty) { this->faculty = faculty; }
 void Student::setYear(const QString &year) { this->year = year; }
 void Student::setGroup(const QString &group) { this->group = group; }
+
+QString Student::toString() const
+{
+    QString studentInfo = "Nothing is here";
+    studentInfo ="First name: "+firstName+"\nLast name: "+lastName+"\nPaternal name: "+paternalName+"\nDate of birth: "+date+"\nPhone number: "+phoneNumber+"\nHome address:"+addres+"\nFaculty: "+faculty+" on year "+year+"\nGroup "+group+"\n";
+    return studentInfo;
+}

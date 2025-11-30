@@ -52,16 +52,16 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../../../lab12/main.cpp \
+SOURCES       = ../../../lab12/databasemanager.cpp \
+		../../../lab12/main.cpp \
 		../../../lab12/mainwindow.cpp \
-		../../../lab12/mysqldbmanager.cpp \
-		../../../lab12/sqlitedbmanager.cpp \
-		../../../lab12/student.cpp moc_mainwindow.cpp
-OBJECTS       = main.o \
+		../../../lab12/student.cpp \
+		../../../lab12/studentrepository.cpp moc_mainwindow.cpp
+OBJECTS       = databasemanager.o \
+		main.o \
 		mainwindow.o \
-		mysqldbmanager.o \
-		sqlitedbmanager.o \
 		student.o \
+		studentrepository.o \
 		moc_mainwindow.o
 DIST          = /usr/lib/qt6/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt6/mkspecs/common/unix.conf \
@@ -380,15 +380,14 @@ DIST          = /usr/lib/qt6/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt6/mkspecs/features/exceptions.prf \
 		/usr/lib/qt6/mkspecs/features/yacc.prf \
 		/usr/lib/qt6/mkspecs/features/lex.prf \
-		/home/lab12/lab12.pro ../../../lab12/dbmanager.h \
+		/home/lab12/lab12.pro ../../../lab12/databasemanager.h \
 		../../../lab12/mainwindow.h \
-		../../../lab12/mysqldbmanager.h \
-		../../../lab12/sqlitedbmanager.h \
-		../../../lab12/student.h ../../../lab12/main.cpp \
+		../../../lab12/student.h \
+		../../../lab12/studentrepository.h ../../../lab12/databasemanager.cpp \
+		../../../lab12/main.cpp \
 		../../../lab12/mainwindow.cpp \
-		../../../lab12/mysqldbmanager.cpp \
-		../../../lab12/sqlitedbmanager.cpp \
-		../../../lab12/student.cpp
+		../../../lab12/student.cpp \
+		../../../lab12/studentrepository.cpp
 QMAKE_TARGET  = lab12
 DESTDIR       = 
 TARGET        = lab12
@@ -1060,8 +1059,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt6/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../../lab12/dbmanager.h ../../../lab12/mainwindow.h ../../../lab12/mysqldbmanager.h ../../../lab12/sqlitedbmanager.h ../../../lab12/student.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../../lab12/main.cpp ../../../lab12/mainwindow.cpp ../../../lab12/mysqldbmanager.cpp ../../../lab12/sqlitedbmanager.cpp ../../../lab12/student.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../../lab12/databasemanager.h ../../../lab12/mainwindow.h ../../../lab12/student.h ../../../lab12/studentrepository.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../../lab12/databasemanager.cpp ../../../lab12/main.cpp ../../../lab12/mainwindow.cpp ../../../lab12/student.cpp ../../../lab12/studentrepository.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../lab12/mainwindow.ui $(DISTDIR)/
 
 
@@ -1098,9 +1097,8 @@ compiler_moc_header_make_all: moc_mainwindow.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_mainwindow.cpp
 moc_mainwindow.cpp: ../../../lab12/mainwindow.h \
-		../../../lab12/dbmanager.h \
 		../../../lab12/student.h \
-		ui_mainwindow.h \
+		../../../lab12/studentrepository.h \
 		moc_predefs.h \
 		/usr/lib/qt6/moc
 	/usr/lib/qt6/moc $(DEFINES) --include /home/cheshyrka/OOP/lab11/build/Desktop-Debug/moc_predefs.h -I/usr/lib/qt6/mkspecs/linux-g++ -I/home/cheshyrka/OOP/lab12 -I/usr/include/qt6 -I/usr/include/qt6/QtWidgets -I/usr/include/qt6/QtGui -I/usr/include/qt6/QtSql -I/usr/include/qt6/QtCore -I. -I/usr/include/c++/15.2.1 -I/usr/include/c++/15.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/15.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed -I/usr/include ../../../lab12/mainwindow.h -o moc_mainwindow.cpp
@@ -1126,37 +1124,28 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
+databasemanager.o: ../../../lab12/databasemanager.cpp ../../../lab12/databasemanager.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o databasemanager.o ../../../lab12/databasemanager.cpp
+
 main.o: ../../../lab12/main.cpp ../../../lab12/mainwindow.h \
-		../../../lab12/dbmanager.h \
 		../../../lab12/student.h \
-		ui_mainwindow.h \
-		../../../lab12/sqlitedbmanager.h
+		../../../lab12/studentrepository.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../../lab12/main.cpp
 
 mainwindow.o: ../../../lab12/mainwindow.cpp ../../../lab12/mainwindow.h \
-		../../../lab12/dbmanager.h \
 		../../../lab12/student.h \
-		ui_mainwindow.h
+		../../../lab12/studentrepository.h \
+		ui_mainwindow.h \
+		../../../lab12/databasemanager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../../lab12/mainwindow.cpp
 
-mysqldbmanager.o: ../../../lab12/mysqldbmanager.cpp ../../../lab12/mysqldbmanager.h \
-		../../../lab12/dbmanager.h \
-		../../../lab12/student.h \
-		ui_mainwindow.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mysqldbmanager.o ../../../lab12/mysqldbmanager.cpp
-
-sqlitedbmanager.o: ../../../lab12/sqlitedbmanager.cpp ../../../lab12/sqlitedbmanager.h \
-		../../../lab12/dbmanager.h \
-		../../../lab12/student.h \
-		ui_mainwindow.h \
-		../../../lab12/mainwindow.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sqlitedbmanager.o ../../../lab12/sqlitedbmanager.cpp
-
-student.o: ../../../lab12/student.cpp ../../../lab12/mainwindow.h \
-		../../../lab12/dbmanager.h \
-		../../../lab12/student.h \
-		ui_mainwindow.h
+student.o: ../../../lab12/student.cpp ../../../lab12/student.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o student.o ../../../lab12/student.cpp
+
+studentrepository.o: ../../../lab12/studentrepository.cpp ../../../lab12/studentrepository.h \
+		../../../lab12/student.h \
+		../../../lab12/databasemanager.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o studentrepository.o ../../../lab12/studentrepository.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
