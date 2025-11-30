@@ -13,13 +13,14 @@
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFormLayout>
+#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTableView>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -52,8 +53,7 @@ public:
     QLineEdit *leYear;
     QLabel *label_5;
     QLineEdit *leGroup;
-    QLabel *lbStudentInfo;
-    QPushButton *showInfo;
+    QTableView *tableView;
     QMenuBar *menubar;
     QMenu *menu;
     QStatusBar *statusbar;
@@ -173,15 +173,10 @@ public:
 
         formLayout->setWidget(9, QFormLayout::ItemRole::FieldRole, leGroup);
 
-        lbStudentInfo = new QLabel(centralwidget);
-        lbStudentInfo->setObjectName("lbStudentInfo");
+        tableView = new QTableView(centralwidget);
+        tableView->setObjectName("tableView");
 
-        formLayout->setWidget(16, QFormLayout::ItemRole::LabelRole, lbStudentInfo);
-
-        showInfo = new QPushButton(centralwidget);
-        showInfo->setObjectName("showInfo");
-
-        formLayout->setWidget(17, QFormLayout::ItemRole::FieldRole, showInfo);
+        formLayout->setWidget(11, QFormLayout::ItemRole::FieldRole, tableView);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
@@ -224,8 +219,6 @@ public:
         label_6->setText(QCoreApplication::translate("MainWindow", "\320\244\320\260\320\272\321\203\320\273\321\214\321\202\320\265\321\202:", nullptr));
         label_8->setText(QCoreApplication::translate("MainWindow", "\320\240\321\226\320\272 \320\275\320\260\320\262\321\207\320\260\320\275\320\275\321\217:", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "\320\223\321\200\321\203\320\277\320\260:", nullptr));
-        lbStudentInfo->setText(QCoreApplication::translate("MainWindow", "\320\206\320\275\321\204\320\276\321\200\320\274\320\260\321\206\321\226\321\217 \320\277\321\200\320\276 \321\201\321\202\321\203\320\264\320\265\320\275\321\202\320\260", nullptr));
-        showInfo->setText(QCoreApplication::translate("MainWindow", "\320\241\321\202\320\262\320\276\321\200\320\270\321\202\320\270 \320\276\320\261'\321\224\320\272\321\202", nullptr));
         menu->setTitle(QCoreApplication::translate("MainWindow", "\320\236\320\261'\321\224\320\272\321\202", nullptr));
     } // retranslateUi
 

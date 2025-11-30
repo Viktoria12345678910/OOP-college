@@ -127,6 +127,8 @@ bool MainWindow::createObject(){
                 QMessageBox::information(this, "Успіх", "Об'єкт Student створено! \n"+info);
                 success = true;
             }
+            else
+                success = false;
         return success;
     }
 

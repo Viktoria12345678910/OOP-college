@@ -12,6 +12,7 @@ i will need the foliwing pages:
 - [x] new account
 - [x] new section
 i have an internal debate on whether to make a home page or not
+it seems that i will have to create a separet class for each table
 
 //...// - means that whatever is in between would be possibly implemented in the future
 
@@ -21,4 +22,5 @@ Stuff to return to:
 2. https://doc.qt.io/qt-6/qtableview.html #catalog
 3. https://forum.qt.io/topic/114072/display-values-from-database-to-qcombobox #sections
 4. https://www.geeksforgeeks.org/ethical-hacking/what-is-salted-password-hashing/ #auth
-5. https://doc.qt.io/qt-6/qtabwidget.html general like | docs on my chosen interface
+5. https://doc.qt.io/qt-6/qtabwidget.html #general-like|docs-on-my-chosen-interface
+6. https://github.com/katecpp/sql_with_qt #example-of-connection-to-database

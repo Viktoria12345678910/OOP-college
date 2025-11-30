@@ -1,50 +1,23 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "dbmanager.h"
-#include "sqlitedbmanager.h"
 #include "student.h"
 #include <vector>
 
-#include <QSqlTableModel>
-#include <QSqlError>
-
-MainWindow::MainWindow(DBManager* dbManager,QWidget *parent)
+MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , dbManager(dbManager)
     , student(nullptr)
 {
     ui->setupUi(this);
-    qDebug() << "database connected "<< dbManager->getDB().isOpen();
-    qDebug() << "database tables "<< dbManager->getDB().tables();
-    this->setupModel(TABLE_STUDENTS,
-                     QStringList() << tr("Hомер по списку")
-                                   << tr("Ім'я")
-                                   << tr("Прізвище")
-                                   << tr("По-батькові")
-                                   << tr("Дата народження")
-                                   << tr("Адреса")
-                                   << tr("Номер телефону")
-                                   << tr("Факультет")
-                                   << tr("Рік навчання")
-                                   << tr("Група")
-    );
-    QMessageBox::information(this, "DB Status",
-        QString("DB Open: %1\nTables: %2")
-        .arg(dbManager->getDB().isOpen() ? "YES" : "NO")
-        .arg(dbManager->getDB().tables().join(", ")));
-    Student testStudent("999", "Test", "Student", "Middle", "010197", "Test Addres", "123", "engineer", "2", "a");
-    bool result = dbManager->insertIntoTable(testStudent);
-    QMessageBox::information(this, "test insert", result ? "SECCESS" : "FAILED:" + dbManager->getDB().lastError().text());
-    this->createUI();
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    if (model)
-        delete model;
-
+    if (student != nullptr) {
+          delete student;
+      }
 }
 
 void MainWindow::notNumeric( int i){
@@ -85,8 +58,10 @@ void MainWindow::notAllFilled(){
 }
 
 bool MainWindow::createObject(){
-    // Student student;
     bool success;
+    if (student != nullptr) {
+            delete student;
+        }
     QString id, firstName, lastName, paternalName, phoneNumber, year, addres, faculty, group, date;
     id = ui->leId->text();
     firstName = ui->leFirstName->text();
@@ -143,37 +118,37 @@ bool MainWindow::createObject(){
             }
 
             if(allValid) {
-                Student student(id, firstName, lastName, paternalName, date, addres, phoneNumber, year, group, faculty);
-                QString info = student.toString();
+                   student = new Student(id, firstName, lastName, paternalName,
+                                       date, addres, phoneNumber, year, group, faculty);
 
-                if(dbManager->insertIntoTable(student)){
-                    QMessageBox::information(this, "Успіх", "Об'єкт Student створено! \n"+info);
-                    success = true;
-                    this->createUI();
-                    ui->leId->clear();
-                    ui->leFirstName->clear();
-                    ui->leLastName->clear();
-                    ui->lePaternalName->clear();
-                    ui->leDate->clear();
-                    ui->leAddress->clear();
-                    ui->lePhoneNumber->clear();
-                    ui->leFaculty->clear();
-                    ui->leYear->clear();
-                    ui->leGroup->clear();
-                    }
                }
-
+            if(student != nullptr){
+                QString info = student->toString();
+                QMessageBox::information(this, "Успіх", "Об'єкт Student створено! \n"+info);
+                success = true;
+            }
         return success;
     }
 
 }
 
 void MainWindow::showObject(){
+    if(student == nullptr) {
+            QMessageBox::warning(this, "Помилка", "Спочатку створіть об'єкт Student!");
+            return;
+        }
     QString info = student->toString();
-    this->createUI();
+    ui->lbStudentInfo->setText(info);
 }
 
+void MainWindow::on_showInfo_clicked()
+{
+    if(createObject()){
+        showObject();
+    }
+    return;
 
+}
 
 void MainWindow::on_aCreateObject_triggered()
 {
@@ -192,30 +167,3 @@ void MainWindow::on_aShowObject_triggered()
     showObject();
 }
 
-void MainWindow::setupModel(const QString& tableName, const QStringList& headers) {
-    model = new QSqlTableModel(this, dbManager->getDB());
-    model->setTable(tableName);
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-    qDebug() << "Table name:"<<tableName;
-    qDebug() << "brfore select row count" << model->rowCount();
-
-    for(int i = 0, j = 0; i < model->columnCount(); i++, j++){
-        model->setHeaderData(i, Qt::Horizontal, headers[j]);
-    }
-    model->setSort(0, Qt::AscendingOrder);
-}
-
-void MainWindow::createUI(){
-
-
-    ui->tableView->setModel(model);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tableView->resizeColumnsToContents();
-    ui->tableView->setEditTriggers(QAbstractItemView::DoubleClicked);
-    ui->tableView->horizontalHeader()->setStretchLastSection(true);
-    model->select();
-    ui->tableView->show();
-    qDebug() << "after select row count " << model->rowCount();
-}
