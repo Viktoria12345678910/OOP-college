@@ -1,12 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "student.h"
+#include "dbmanager.h"
+#include <QSqlError>
 #include <vector>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(DBManager* dbManager, QWidget *parent)
     : QMainWindow(parent)
+    , dbManager(dbManager)
     , ui(new Ui::MainWindow)
     , student(nullptr)
+
 {
     ui->setupUi(this);
 
@@ -120,35 +124,40 @@ bool MainWindow::createObject(){
             if(allValid) {
                    student = new Student(id, firstName, lastName, paternalName,
                                        date, addres, phoneNumber, year, group, faculty);
+                   Student student2(id, firstName, lastName, paternalName,
+                                    date, addres, phoneNumber, year, group, faculty);
+                   dbManager->inserIntoTable(student2);
 
                }
             if(student != nullptr){
+                // if(dbManager->inserIntoTable(*student)){
+                    // QString info = student->toString();
+                    // QMessageBox::information(this, "Успіх", "Об'єкт Student створено! \n"+info);
+                // }
+                // else{
+                     // QMessageBox::warning(this, "Помилка", "Не вдалося вставити в БД! Перевірте консоль.");
+                // }
                 QString info = student->toString();
                 QMessageBox::information(this, "Успіх", "Об'єкт Student створено! \n"+info);
                 success = true;
+            }
+            else{
+                success = false;
+                QMessageBox::information(this, "Успіх", "student is nullptr");
             }
         return success;
     }
 
 }
 
-void MainWindow::showObject(){
-    if(student == nullptr) {
-            QMessageBox::warning(this, "Помилка", "Спочатку створіть об'єкт Student!");
-            return;
-        }
-    QString info = student->toString();
-    ui->lbStudentInfo->setText(info);
-}
+// void MainWindow::showObject(){
+//     if(student == nullptr) {
+//             QMessageBox::warning(this, "Помилка", "Спочатку створіть об'єкт Student!");
+//             return;
+//         }
+//     QString info = student->toString();
+// }
 
-void MainWindow::on_showInfo_clicked()
-{
-    if(createObject()){
-        showObject();
-    }
-    return;
-
-}
 
 void MainWindow::on_aCreateObject_triggered()
 {
@@ -162,8 +171,40 @@ void MainWindow::on_aQuit_triggered()
 }
 
 
-void MainWindow::on_aShowObject_triggered()
-{
-    showObject();
+
+
+void MainWindow::setupModel(const QString& tableName, const QStringList& headers) {
+    /* Виконуємо ініціалізацію моделі представлення даних
+     * з вказанням імені таблиці в базі даних, до якої
+     * буде виконуватись звернення
+     * */
+    model = new QSqlTableModel(this, dbManager->getDB());
+    model->setTable(tableName);
+
+    // Встановлюємо назви стовпців в таблиці із сортуванням даних
+    for (int i = 0, j = 0; i < model->columnCount(); i++, j++) {
+        model->setHeaderData(i, Qt::Horizontal, headers[j]);
+    }
+    // Встановлюємо сортування по збільшення даних по нульовому стовпцю
+    model->setSort(0, Qt::AscendingOrder);
+}
+
+void MainWindow::createUI() {
+    // Встановлюємо модель для TableView
+    ui->tableView->setModel(model);
+    // Приховуємо колонку з id таблиці БД
+    ui->tableView->setColumnHidden(0, true);
+    // Дозволяємо виділення рядків
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    // Встановлюємо режим виділення лише одного рядка в таблиці
+    ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    // Встановлюємо розмір колонок по вмісту
+    ui->tableView->resizeColumnsToContents();
+    // Встановлюємо стратегію редагування - при подвійному кліку
+    ui->tableView->setEditTriggers(QAbstractItemView::DoubleClicked);
+    // Розтягуємо останній стовпчик tableView на всю ширину вікна
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
+    // Виконуємо вибірку даних із таблиці
+    model->select();
 }
 

@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
+#include "dbmanager.h"
 #include "student.h"
+#include <QSqlTableModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,25 +16,28 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(DBManager* dbManager, QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void on_showInfo_clicked();
 
     void on_aCreateObject_triggered();
 
     void on_aQuit_triggered();
 
-    void on_aShowObject_triggered();
 
 private:
+    void setupModel(const QString& tableName, const QStringList& headers);
+    void createUI();
+    DBManager* dbManager;
+    QSqlTableModel* model;
     Ui::MainWindow *ui;
     Student *student;
     void notNumeric(int i);
     void notAllFilled();
     bool createObject();
     void showObject();
+    QString error;
 
 };
 #endif // MAINWINDOW_H

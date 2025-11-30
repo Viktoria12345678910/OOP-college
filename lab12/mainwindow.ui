@@ -115,19 +115,8 @@
     <item row="9" column="1">
      <widget class="QLineEdit" name="leGroup"/>
     </item>
-    <item row="16" column="0">
-     <widget class="QLabel" name="lbStudentInfo">
-      <property name="text">
-       <string>Інформація про студента</string>
-      </property>
-     </widget>
-    </item>
-    <item row="17" column="1">
-     <widget class="QPushButton" name="showInfo">
-      <property name="text">
-       <string>Створити об'єкт</string>
-      </property>
-     </widget>
+    <item row="10" column="0" colspan="2">
+     <widget class="QTableView" name="tableView"/>
     </item>
    </layout>
   </widget>
