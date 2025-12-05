@@ -20,22 +20,22 @@ void GroupManagerDialog::setupUI()
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    m_groupsList = new QListWidget();
-    mainLayout->addWidget(m_groupsList);
+    mGroupsList = new QListWidget();
+    mainLayout->addWidget(mGroupsList);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
-    m_createButton = new QPushButton("Створити групу");
-    connect(m_createButton, &QPushButton::clicked, this, &GroupManagerDialog::onCreateGroup);
-    buttonLayout->addWidget(m_createButton);
+    mCreateButton = new QPushButton("Створити групу");
+    connect(mCreateButton, &QPushButton::clicked, this, &GroupManagerDialog::onCreateGroup);
+    buttonLayout->addWidget(mCreateButton);
 
-    m_deleteButton = new QPushButton("Видалити групу");
-    connect(m_deleteButton, &QPushButton::clicked, this, &GroupManagerDialog::onDeleteGroup);
-    buttonLayout->addWidget(m_deleteButton);
+    mDeleteButton = new QPushButton("Видалити групу");
+    connect(mDeleteButton, &QPushButton::clicked, this, &GroupManagerDialog::onDeleteGroup);
+    buttonLayout->addWidget(mDeleteButton);
 
-    m_manageMembersButton = new QPushButton("Керувати учасниками");
-    connect(m_manageMembersButton, &QPushButton::clicked, this, &GroupManagerDialog::onManageMembers);
-    buttonLayout->addWidget(m_manageMembersButton);
+    mManageMembersButton = new QPushButton("Керувати учасниками");
+    connect(mManageMembersButton, &QPushButton::clicked, this, &GroupManagerDialog::onManageMembers);
+    buttonLayout->addWidget(mManageMembersButton);
 
     mainLayout->addLayout(buttonLayout);
 
@@ -63,7 +63,7 @@ void GroupManagerDialog::onCreateGroup()
 
 void GroupManagerDialog::onDeleteGroup()
 {
-    QListWidgetItem *item = m_groupsList->currentItem();
+    QListWidgetItem *item = mGroupsList->currentItem();
     if (!item) {
         QMessageBox::warning(this, "Попередження", "Оберіть групу для видалення!");
         return;
@@ -91,7 +91,7 @@ void GroupManagerDialog::onDeleteGroup()
 
 void GroupManagerDialog::onManageMembers()
 {
-    QListWidgetItem *item = m_groupsList->currentItem();
+    QListWidgetItem *item = mGroupsList->currentItem();
     if (!item) {
         QMessageBox::warning(this, "Попередження", "Оберіть групу!");
         return;
@@ -104,7 +104,7 @@ void GroupManagerDialog::onManageMembers()
 
 void GroupManagerDialog::refreshGroupList()
 {
-    m_groupsList->clear();
+    mGroupsList->clear();
 
     QSqlQuery query("SELECT group_id, group_name FROM groups");
     while (query.next()) {
@@ -113,6 +113,6 @@ void GroupManagerDialog::refreshGroupList()
 
         QListWidgetItem *item = new QListWidgetItem(name);
         item->setData(Qt::UserRole, id);
-        m_groupsList->addItem(item);
+        mGroupsList->addItem(item);
     }
 }

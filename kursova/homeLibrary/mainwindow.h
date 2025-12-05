@@ -7,8 +7,11 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QSqlTableModel>
+#include <QTextBrowser>
 #include <QComboBox>
 #include "database.h"
+#include <QMessageBox>
+#include <QSqlRecord>
 
 class MainWindow : public QMainWindow
 {
@@ -24,22 +27,32 @@ private slots:
     void onNewAccount();
     void onSectionChanged(int index);
     void onManageGroups();
+    void onSearch(const QString &text);
+    void onDeleteBook();
+    void onDeleteSection();
+    void onDeleteUser();
 
 private:
     void setupUI();
     void loadSections();
     void loadBooks(int sectionId = -1);
 
-    QTabWidget *m_tabWidget;
-    QTableView *m_booksTable;
-    QTableView *m_sectionsTable;
-    QTableView *m_usersTable;
-    QSqlTableModel *m_booksModel;
-    QSqlTableModel *m_sectionsModel;
-    QSqlTableModel *m_usersModel;
-    QComboBox *m_sectionFilter;
+    QTabWidget *mTabWidget;
+    QTableView *mBooksTable;
+    QTableView *mSectionsTable;
+    QTableView *mUsersTable;
+    QTextBrowser *mHelp;
+    QSqlTableModel *mBooksModel;
+    QSqlTableModel *mSectionsModel;
+    QSqlTableModel *mUsersModel;
+    QComboBox *mSectionFilter;
+    QLineEdit *mSearchBar;
+    QPushButton *mDeleteBook;
+    QPushButton *mDeleteSection;
+    QPushButton *mDeleteUser;
 
-    int m_currentUserId;
+
+    int mCurrentUserId;
 };
 
 #endif // MAINWINDOW_H

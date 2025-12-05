@@ -18,10 +18,10 @@ Database::~Database()
 
 bool Database::connect(const QString &path)
 {
-    m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName(path);
+    mDb = QSqlDatabase::addDatabase("QSQLITE");
+    mDb.setDatabaseName(path);
 
-    if (!m_db.open()) {
+    if (!mDb.open()) {
         qDebug() << "Error: connection with database failed";
         return false;
     }
@@ -32,8 +32,8 @@ bool Database::connect(const QString &path)
 
 void Database::disconnect()
 {
-    if (m_db.isOpen()) {
-        m_db.close();
+    if (mDb.isOpen()) {
+        mDb.close();
     }
 }
 
@@ -48,7 +48,6 @@ bool Database::createTables()
             name TEXT NOT NULL,
             abbreviation TEXT,
             description TEXT,
-            path TEXT,
             book_count INTEGER DEFAULT 0,
             access_groups TEXT DEFAULT 'all'
         )
@@ -232,17 +231,16 @@ QList<QString> Database::getUserGroups(int userId)
 }
 
 int Database::createSection(const QString &name, const QString &abbreviation,
-                            const QString &description, const QString &path)
+                            const QString &description)
 {
     QSqlQuery query;
     query.prepare(R"(
-        INSERT INTO sections (name, abbreviation, description, path)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO sections (name, abbreviation, description)
+        VALUES (?, ?, ?)
     )");
     query.addBindValue(name);
     query.addBindValue(abbreviation);
     query.addBindValue(description);
-    query.addBindValue(path);
 
     if (!query.exec()) {
         qDebug() << "Error creating section:" << query.lastError();
@@ -319,5 +317,29 @@ bool Database::addUserToGroup(int userId, int groupId)
     query.addBindValue(userId);
     query.addBindValue(groupId);
 
+    return query.exec();
+}
+
+bool Database::deleteBook(int bookId)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM books WHERE book_id = ?");
+    query.addBindValue(bookId);
+    return query.exec();
+}
+
+bool Database::deleteSection(int sectionId)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM sections WHERE section_id = ?");
+    query.addBindValue(sectionId);
+    return query.exec();
+}
+
+bool Database::deleteUser(int userId)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM users WHERE user_id = ?");
+    query.addBindValue(userId);
     return query.exec();
 }

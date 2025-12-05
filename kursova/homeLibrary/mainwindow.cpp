@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "dialogs/newbookdialog.h"
-#include "dialogs/newsectiondialog.h"
+#include "dialogs/section managerdialog.h"
 #include "dialogs/newaccountdialog.h"
 #include "dialogs/logindialog.h"
 #include "dialogs/groupmanagerdialog.h"
@@ -15,9 +15,8 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , m_currentUserId(-1)
+    , mCurrentUserId(-1)
 {
-    // Ініціалізація бази даних
     if (!Database::instance().connect()) {
         QMessageBox::critical(this, "Критична помилка",
                             "Не вдалось підключитись до бази даних!");
@@ -25,10 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
         return;
     }
 
-    // Показати діалог логіну
     LoginDialog loginDialog(this);
     if (loginDialog.exec() == QDialog::Accepted) {
-        m_currentUserId = loginDialog.userId();
+        mCurrentUserId = loginDialog.userId();
         QString username = loginDialog.username();
 
         setupUI();
@@ -50,7 +48,6 @@ void MainWindow::setupUI()
     setWindowTitle("Картотека домашньої бібліотеки");
     resize(1200, 700);
 
-    // Створення меню
     QMenu *fileMenu = menuBar()->addMenu("&Файл");
 
     QAction *newBookAction = new QAction("&Нова книга", this);
@@ -69,10 +66,9 @@ void MainWindow::setupUI()
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
     fileMenu->addAction(exitAction);
 
-    // Меню управління
     QMenu *manageMenu = menuBar()->addMenu("&Управління");
 
-    QAction *manageUsersAction = new QAction("&Користувачі", this);
+    QAction *manageUsersAction = new QAction("&Новий користувач", this);
     connect(manageUsersAction, &QAction::triggered, this, &MainWindow::onNewAccount);
     manageMenu->addAction(manageUsersAction);
 
@@ -81,9 +77,9 @@ void MainWindow::setupUI()
     manageMenu->addAction(manageGroupsAction);
 
     // Створення вкладок
-    m_tabWidget = new QTabWidget(this);
-    m_tabWidget->setTabPosition(QTabWidget::North);
-    setCentralWidget(m_tabWidget);
+    mTabWidget = new QTabWidget(this);
+    mTabWidget->setTabPosition(QTabWidget::North);
+    setCentralWidget(mTabWidget);
 
     // Вкладка "Каталог"
     QWidget *catalogWidget = new QWidget();
@@ -96,103 +92,142 @@ void MainWindow::setupUI()
     filterLabel->setStyleSheet("font-weight: bold;");
     filterLayout->addWidget(filterLabel);
 
-    m_sectionFilter = new QComboBox();
-    m_sectionFilter->setMinimumWidth(200);
-    connect(m_sectionFilter, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    mSectionFilter = new QComboBox();
+    mSectionFilter->setMinimumWidth(200);
+    connect(mSectionFilter, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &MainWindow::onSectionChanged);
-    filterLayout->addWidget(m_sectionFilter);
+    filterLayout->addWidget(mSectionFilter);
     filterLayout->addStretch();
+
+    mSearchBar = new QLineEdit();
+    mSearchBar->setPlaceholderText("Пошук книг...");
+    mSearchBar->setMaximumWidth(300);
+    connect(mSearchBar, &QLineEdit::textChanged, this, &MainWindow::onSearch);
+    filterLayout->addWidget(mSearchBar);
+
     catalogLayout->addLayout(filterLayout);
 
-    m_booksTable = new QTableView();
-    m_booksModel = new QSqlTableModel(this, Database::instance().getDatabase());
-    m_booksModel->setTable("books");
-    m_booksModel->setEditStrategy(QSqlTableModel::OnFieldChange);
+    mBooksTable = new QTableView();
+    mBooksModel = new QSqlTableModel(this, Database::instance().getDatabase());
+    mBooksModel->setTable("books");
+    mBooksModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 
     // Встановлення заголовків
-    m_booksModel->setHeaderData(1, Qt::Horizontal, "Носій");
-    m_booksModel->setHeaderData(2, Qt::Horizontal, "Назва");
-    m_booksModel->setHeaderData(3, Qt::Horizontal, "Автор");
-    m_booksModel->setHeaderData(4, Qt::Horizontal, "Жанр");
-    m_booksModel->setHeaderData(5, Qt::Horizontal, "Рейтинг");
-    m_booksModel->setHeaderData(6, Qt::Horizontal, "Опис");
-    m_booksModel->setHeaderData(7, Qt::Horizontal, "Прочитано");
-    m_booksModel->select();
+    mBooksModel->setHeaderData(1, Qt::Horizontal, "Носій");
+    mBooksModel->setHeaderData(2, Qt::Horizontal, "Назва");
+    mBooksModel->setHeaderData(3, Qt::Horizontal, "Автор");
+    mBooksModel->setHeaderData(4, Qt::Horizontal, "Жанр");
+    mBooksModel->setHeaderData(5, Qt::Horizontal, "Рейтинг");
+    mBooksModel->setHeaderData(6, Qt::Horizontal, "Опис");
+    mBooksModel->setHeaderData(7, Qt::Horizontal, "Прочитано");
+    mBooksModel->setHeaderData(8, Qt::Horizontal, "Права перегляду");
+    mBooksModel->select();
 
-    m_booksTable->setModel(m_booksModel);
-    m_booksTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_booksTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_booksTable->setAlternatingRowColors(true);
-    m_booksTable->horizontalHeader()->setStretchLastSection(true);
-    m_booksTable->verticalHeader()->hide();
-    m_booksTable->hideColumn(0); // Приховати ID
-    m_booksTable->hideColumn(9); // Приховати обкладинку
+    mBooksTable->setModel(mBooksModel);
+    mBooksTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mBooksTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    mBooksTable->setAlternatingRowColors(true);
+    mBooksTable->horizontalHeader()->setStretchLastSection(true);
+    mBooksTable->verticalHeader()->hide();
+    mBooksTable->hideColumn(0); // Приховати ID
+    mBooksTable->hideColumn(9); // Приховати обкладинку
+    mBooksTable->hideColumn(10);
+    catalogLayout->addWidget(mBooksTable);
 
-    catalogLayout->addWidget(m_booksTable);
-    m_tabWidget->addTab(catalogWidget, "📚 Каталог");
+    mDeleteBook = new QPushButton("Видалити книгу");
+    connect(mDeleteBook, &QPushButton::clicked, this, &MainWindow::onDeleteBook);
+    catalogLayout->addWidget(mDeleteBook);
+
+
+    mTabWidget->addTab(catalogWidget, "📚 Каталог");
 
     // Вкладка "Секції"
     QWidget *sectionsWidget = new QWidget();
     QVBoxLayout *sectionsLayout = new QVBoxLayout(sectionsWidget);
     sectionsLayout->setContentsMargins(10, 10, 10, 10);
 
-    m_sectionsTable = new QTableView();
-    m_sectionsModel = new QSqlTableModel(this, Database::instance().getDatabase());
-    m_sectionsModel->setTable("sections");
-    m_sectionsModel->setEditStrategy(QSqlTableModel::OnFieldChange);
+    mSectionsTable = new QTableView();
+    mSectionsModel = new QSqlTableModel(this, Database::instance().getDatabase());
+    mSectionsModel->setTable("sections");
+    mSectionsModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 
-    m_sectionsModel->setHeaderData(1, Qt::Horizontal, "Назва");
-    m_sectionsModel->setHeaderData(2, Qt::Horizontal, "Абревіатура");
-    m_sectionsModel->setHeaderData(3, Qt::Horizontal, "Опис");
-    m_sectionsModel->setHeaderData(4, Qt::Horizontal, "Шлях");
-    m_sectionsModel->setHeaderData(5, Qt::Horizontal, "Кількість книг");
-    m_sectionsModel->select();
+    mSectionsModel->setHeaderData(1, Qt::Horizontal, "Назва");
+    mSectionsModel->setHeaderData(2, Qt::Horizontal, "Абревіатура");
+    mSectionsModel->setHeaderData(3, Qt::Horizontal, "Опис");
+    mSectionsModel->setHeaderData(4, Qt::Horizontal, "Шлях");
+    mSectionsModel->setHeaderData(5, Qt::Horizontal, "Кількість книг");
+    mSectionsModel->setHeaderData(6, Qt::Horizontal, "Групи які мають доступ");
+    mSectionsModel->select();
 
-    m_sectionsTable->setModel(m_sectionsModel);
-    m_sectionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_sectionsTable->setAlternatingRowColors(true);
-    m_sectionsTable->horizontalHeader()->setStretchLastSection(true);
-    m_sectionsTable->verticalHeader()->hide();
-    m_sectionsTable->hideColumn(0); // Приховати ID
+    mSectionsTable->setModel(mSectionsModel);
+    mSectionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mSectionsTable->setAlternatingRowColors(true);
+    mSectionsTable->horizontalHeader()->setStretchLastSection(true);
+    mSectionsTable->verticalHeader()->hide();
+    mSectionsTable->hideColumn(0); // Приховати ID
 
-    sectionsLayout->addWidget(m_sectionsTable);
-    m_tabWidget->addTab(sectionsWidget, "📂 Секції");
+    sectionsLayout->addWidget(mSectionsTable);
 
-    // Вкладка "Користувачі"
+    mDeleteSection = new QPushButton("Видалити секцію");
+    connect(mDeleteSection, &QPushButton::clicked, this, &MainWindow::onDeleteSection);
+    sectionsLayout->addWidget(mDeleteSection);
+
+    mTabWidget->addTab(sectionsWidget, "📂 Секції");
+
+
     QWidget *usersWidget = new QWidget();
     QVBoxLayout *usersLayout = new QVBoxLayout(usersWidget);
     usersLayout->setContentsMargins(10, 10, 10, 10);
 
-    m_usersTable = new QTableView();
-    m_usersModel = new QSqlTableModel(this, Database::instance().getDatabase());
-    m_usersModel->setTable("users");
-    m_usersModel->setEditStrategy(QSqlTableModel::OnFieldChange);
+    mUsersTable = new QTableView();
+    mUsersModel = new QSqlTableModel(this, Database::instance().getDatabase());
+    mUsersModel->setTable("users");
+    mUsersModel->setEditStrategy(QSqlTableModel::OnFieldChange);
 
-    m_usersModel->setHeaderData(1, Qt::Horizontal, "Користувач");
-    m_usersModel->setHeaderData(4, Qt::Horizontal, "Дата створення");
-    m_usersModel->setHeaderData(5, Qt::Horizontal, "Останній вхід");
-    m_usersModel->select();
+    mUsersModel->setHeaderData(1, Qt::Horizontal, "Користувач");
+    mUsersModel->setHeaderData(4, Qt::Horizontal, "Дата створення");
+    mUsersModel->setHeaderData(5, Qt::Horizontal, "Останній вхід");
+    mUsersModel->select();
 
-    m_usersTable->setModel(m_usersModel);
-    m_usersTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_usersTable->setAlternatingRowColors(true);
-    m_usersTable->horizontalHeader()->setStretchLastSection(true);
-    m_usersTable->verticalHeader()->hide();
-    m_usersTable->hideColumn(0); // ID
-    m_usersTable->hideColumn(2); // password_hash
-    m_usersTable->hideColumn(3); // salt
+    mUsersTable->setModel(mUsersModel);
+    mUsersTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mUsersTable->setAlternatingRowColors(true);
+    mUsersTable->horizontalHeader()->setStretchLastSection(true);
+    mUsersTable->verticalHeader()->hide();
+    mUsersTable->hideColumn(0); // ID
+    mUsersTable->hideColumn(2); // password_hash
+    mUsersTable->hideColumn(3); // salt
 
-    usersLayout->addWidget(m_usersTable);
-    m_tabWidget->addTab(usersWidget, "👤 Користувачі");
+    usersLayout->addWidget(mUsersTable);
 
-    // Статус бар
+    mDeleteUser = new QPushButton("Видалити користувача");
+    connect(mDeleteUser, &QPushButton::clicked, this, &MainWindow::onDeleteUser);
+    usersLayout->addWidget(mDeleteUser);
+
+    mTabWidget->addTab(usersWidget, "👤 Користувачі");
+
+    QWidget *helpWidget = new QWidget();
+    QVBoxLayout *helpLayout = new QVBoxLayout(helpWidget);
+    helpLayout->setContentsMargins(10, 10, 10, 10);
+
+    mHelp = new QTextBrowser();
+    QUrl help("/home/cheshyrka/OOP/kursova/homeLibrary/help.html");
+    mHelp->setSource(help);
+
+    helpLayout->addWidget(mHelp);
+    mTabWidget->addTab(helpWidget, "❓Допоміжна інформація");
+
+    if(mCurrentUserId != 1){
+            manageMenu->menuAction()->setVisible(false);
+            mTabWidget->tabBar()->setTabVisible(2, false);
+    }
     statusBar()->show();
 }
 
 void MainWindow::loadSections()
 {
-    m_sectionFilter->clear();
-    m_sectionFilter->addItem("📚 Всі секції", -1);
+    mSectionFilter->clear();
+    mSectionFilter->addItem("📚 Всі секції", -1);
 
     QSqlQuery query("SELECT section_id, name, book_count FROM sections ORDER BY name");
     while (query.next()) {
@@ -200,7 +235,7 @@ void MainWindow::loadSections()
         QString name = query.value(1).toString();
         int bookCount = query.value(2).toInt();
 
-        m_sectionFilter->addItem(
+        mSectionFilter->addItem(
             QString("%1 (%2)").arg(name).arg(bookCount), id);
     }
 }
@@ -208,22 +243,22 @@ void MainWindow::loadSections()
 void MainWindow::loadBooks(int sectionId)
 {
     if (sectionId == -1) {
-        m_booksModel->setFilter("");
+        mBooksModel->setFilter("");
     } else {
-        m_booksModel->setFilter(QString("section_id = %1").arg(sectionId));
+        mBooksModel->setFilter(QString("section_id = %1").arg(sectionId));
     }
-    m_booksModel->select();
+    mBooksModel->select();
 
     statusBar()->showMessage(
-        QString("Показано книг: %1").arg(m_booksModel->rowCount()), 3000);
+        QString("Показано книг: %1").arg(mBooksModel->rowCount()), 3000);
 }
 
 void MainWindow::onNewBook()
 {
     NewBookDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted) {
-        m_booksModel->select();
-        m_sectionsModel->select();
+        mBooksModel->select();
+        mSectionsModel->select();
         loadSections();
         statusBar()->showMessage("Книгу успішно додано!", 3000);
     }
@@ -233,17 +268,18 @@ void MainWindow::onNewSection()
 {
     NewSectionDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted) {
-        m_sectionsModel->select();
+        mSectionsModel->select();
         loadSections();
         statusBar()->showMessage("Секцію успішно додано!", 3000);
     }
+
 }
 
 void MainWindow::onNewAccount()
 {
     NewAccountDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted) {
-        m_usersModel->select();
+        mUsersModel->select();
         statusBar()->showMessage("Акаунт успішно створено!", 3000);
     }
 }
@@ -256,6 +292,115 @@ void MainWindow::onManageGroups()
 
 void MainWindow::onSectionChanged(int index)
 {
-    int sectionId = m_sectionFilter->itemData(index).toInt();
+    int sectionId = mSectionFilter->itemData(index).toInt();
     loadBooks(sectionId);
+}
+
+void MainWindow::onSearch(const QString &text)
+{
+    if (text.isEmpty()) {
+           // Show all books in current section
+           if (mSectionFilter->currentIndex() > 0) {
+               int sectionId = mSectionFilter->currentData().toInt();
+               mBooksModel->setFilter(QString("section_id = %1").arg(sectionId));
+           } else {
+               mBooksModel->setFilter("");
+           }
+       } else {
+           // Search in title, author, genre
+           QString filter = QString("(title LIKE '%%1%' OR author LIKE '%%1%' OR genre LIKE '%%1%')").arg(text);
+
+           // Combine with section filter if selected
+           if (mSectionFilter->currentIndex() > 0) {
+               int sectionId = mSectionFilter->currentData().toInt();
+               filter = QString("section_id = %1 AND %2").arg(sectionId).arg(filter);
+           }
+
+           mBooksModel->setFilter(filter);
+       }
+       mBooksModel->select();
+}
+
+
+void MainWindow::onDeleteBook()
+{
+    QModelIndex index = mBooksTable->currentIndex();
+    if (!index.isValid()) {
+        QMessageBox::warning(this, "Помилка", "Оберіть книгу для видалення");
+        return;
+    }
+
+    int row = index.row();
+    int bookId = mBooksModel->record(row).value("book_id").toInt();
+    QString title = mBooksModel->record(row).value("title").toString();
+
+    QMessageBox::StandardButton reply = QMessageBox::question(
+        this, "Підтвердження",
+        QString("Ви впевнені, що хочете видалити книгу '%1'?").arg(title),
+        QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        if (Database::instance().deleteBook(bookId)) {
+            QMessageBox::information(this, "Успіх", "Книгу видалено!");
+            mBooksModel->select();
+        } else {
+            QMessageBox::critical(this, "Помилка", "Не вдалось видалити книгу");
+        }
+    }
+    loadBooks();
+}
+
+void MainWindow::onDeleteSection()
+{
+    QModelIndex index = mSectionsTable->currentIndex();
+    if(!index.isValid()){
+        QMessageBox::warning(this, "Помилка", "Оберіть секцію для видалення");
+        return;
+    }
+
+    int row = index.row();
+    int sectionId = mSectionsModel->record(row).value("section_id").toInt();
+    QString name = mSectionsModel->record(row).value("name").toString();
+
+    QMessageBox::StandardButton reply = QMessageBox::question(
+        this, "Підтвердження",
+        QString("Ви впевнені, що хочете видалити секцію '%1'?").arg(name),
+        QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        if (Database::instance().deleteSection(sectionId)) {
+            QMessageBox::information(this, "Успіх", "Секцію видалено!");
+            mBooksModel->select();
+        } else {
+            QMessageBox::critical(this, "Помилка", "Не вдалось видалити книгу");
+        }
+    }
+    void loadSections();
+}
+
+void MainWindow::onDeleteUser()
+{
+    QModelIndex index = mUsersTable->currentIndex();
+    if(!index.isValid()){
+        QMessageBox::warning(this, "Помилка", "Оберіть користувача для видалення");
+        return;
+    }
+
+    int row = index.row();
+    int userId = mSectionsModel->record(row).value("user_id").toInt();
+    QString userName = mSectionsModel->record(row).value("username").toString();
+
+    QMessageBox::StandardButton reply = QMessageBox::question(
+        this, "Підтвердження",
+        QString("Ви впевнені, що хочете видалити користувача '%1'?").arg(userName),
+        QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        if (Database::instance().deleteUser(userId)) {
+            QMessageBox::information(this, "Успіх", "Секцію видалено!");
+            mBooksModel->select();
+        } else {
+            QMessageBox::critical(this, "Помилка", "Не вдалось видалити книгу");
+        }
+    }
 }

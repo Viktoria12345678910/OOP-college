@@ -26,57 +26,57 @@ void NewBookDialog::setupUI()
     QFormLayout *formLayout = new QFormLayout();
 
     // Тип носія
-    m_mediumCombo = new QComboBox();
-    m_mediumCombo->addItems({"Паперова", "Електронна", "Аудіокнига"});
-    formLayout->addRow("Тип носія:", m_mediumCombo);
+    mMediumCombo = new QComboBox();
+    mMediumCombo->addItems({"Паперова", "Електронна", "Аудіокнига"});
+    formLayout->addRow("Тип носія:", mMediumCombo);
 
     // Назва
-    m_titleEdit = new QLineEdit();
-    formLayout->addRow("Назва*:", m_titleEdit);
+    mTitleEdit = new QLineEdit();
+    formLayout->addRow("Назва*:", mTitleEdit);
 
     // Автор
-    m_authorEdit = new QLineEdit();
-    formLayout->addRow("Автор:", m_authorEdit);
+    mAuthorEdit = new QLineEdit();
+    formLayout->addRow("Автор:", mAuthorEdit);
 
     // Жанр
-    m_genreEdit = new QLineEdit();
-    formLayout->addRow("Жанр:", m_genreEdit);
+    mGenreEdit = new QLineEdit();
+    formLayout->addRow("Жанр:", mGenreEdit);
 
     // Рейтинг
-    m_ratingSpin = new QSpinBox();
-    m_ratingSpin->setRange(1, 5);
-    m_ratingSpin->setValue(3);
-    formLayout->addRow("Рейтинг:", m_ratingSpin);
+    mRatingSpin = new QSpinBox();
+    mRatingSpin->setRange(1, 5);
+    mRatingSpin->setValue(3);
+    formLayout->addRow("Рейтинг:", mRatingSpin);
 
     // Опис
-    m_descriptionEdit = new QTextEdit();
-    m_descriptionEdit->setMaximumHeight(100);
-    formLayout->addRow("Опис:", m_descriptionEdit);
+    mDescriptionEdit = new QTextEdit();
+    mDescriptionEdit->setMaximumHeight(100);
+    formLayout->addRow("Опис:", mDescriptionEdit);
 
     // Прочитано
-    m_readCheck = new QCheckBox("Прочитано");
-    formLayout->addRow("", m_readCheck);
+    mReadCheck = new QCheckBox("Прочитано");
+    formLayout->addRow("", mReadCheck);
 
     // Права перегляду
-    m_viewRightsCombo = new QComboBox();
-    m_viewRightsCombo->addItems({"Всі", "Тільки я", "Вибрати групу"});
-    formLayout->addRow("Права перегляду:", m_viewRightsCombo);
+    mViewRightsCombo = new QComboBox();
+    mViewRightsCombo->addItems({"Всі", "Тільки я", "Вибрати групу"});
+    formLayout->addRow("Права перегляду:", mViewRightsCombo);
 
     // Секція
-    m_sectionCombo = new QComboBox();
-    formLayout->addRow("Секція*:", m_sectionCombo);
+    mSectionCombo = new QComboBox();
+    formLayout->addRow("Секція*:", mSectionCombo);
 
     // Обкладинка
     QHBoxLayout *coverLayout = new QHBoxLayout();
-    m_coverButton = new QPushButton("Вибрати обкладинку");
-    connect(m_coverButton, &QPushButton::clicked, this, &NewBookDialog::onSelectCover);
-    coverLayout->addWidget(m_coverButton);
+    mCoverButton = new QPushButton("Вибрати обкладинку");
+    connect(mCoverButton, &QPushButton::clicked, this, &NewBookDialog::onSelectCover);
+    coverLayout->addWidget(mCoverButton);
 
-    m_coverPreview = new QLabel();
-    m_coverPreview->setFixedSize(100, 150);
-    m_coverPreview->setFrameStyle(QFrame::Box);
-    m_coverPreview->setScaledContents(true);
-    coverLayout->addWidget(m_coverPreview);
+    mCoverPreview = new QLabel();
+    mCoverPreview->setFixedSize(100, 150);
+    mCoverPreview->setFrameStyle(QFrame::Box);
+    mCoverPreview->setScaledContents(true);
+    coverLayout->addWidget(mCoverPreview);
     coverLayout->addStretch();
 
     formLayout->addRow("Обкладинка:", coverLayout);
@@ -97,7 +97,7 @@ void NewBookDialog::loadSections()
     while (query.next()) {
         int id = query.value(0).toInt();
         QString name = query.value(1).toString();
-        m_sectionCombo->addItem(name, id);
+        mSectionCombo->addItem(name, id);
     }
 }
 
@@ -109,9 +109,9 @@ void NewBookDialog::onSelectCover()
     if (!fileName.isEmpty()) {
         QPixmap pixmap(fileName);
         if (!pixmap.isNull()) {
-            m_coverPreview->setPixmap(pixmap);
+            mCoverPreview->setPixmap(pixmap);
 
-            QBuffer buffer(&m_coverData);
+            QBuffer buffer(&mCoverData);
             buffer.open(QIODevice::WriteOnly);
             pixmap.save(&buffer, "PNG");
         }
@@ -120,29 +120,29 @@ void NewBookDialog::onSelectCover()
 
 void NewBookDialog::onSave()
 {
-    if (m_titleEdit->text().isEmpty()) {
+    if (mTitleEdit->text().isEmpty()) {
         QMessageBox::warning(this, "Помилка", "Назва книги обов'язкова!");
         return;
     }
 
-    if (m_sectionCombo->currentIndex() == -1) {
+    if (mSectionCombo->currentIndex() == -1) {
         QMessageBox::warning(this, "Помилка", "Оберіть секцію!");
         return;
     }
 
-    QString medium = m_mediumCombo->currentText();
-    QString title = m_titleEdit->text();
-    QString author = m_authorEdit->text();
-    QString genre = m_genreEdit->text();
-    int rating = m_ratingSpin->value();
-    QString description = m_descriptionEdit->toPlainText();
-    bool read = m_readCheck->isChecked();
-    QString viewRights = m_viewRightsCombo->currentText();
-    int sectionId = m_sectionCombo->currentData().toInt();
+    QString medium = mMediumCombo->currentText();
+    QString title = mTitleEdit->text();
+    QString author = mAuthorEdit->text();
+    QString genre = mGenreEdit->text();
+    int rating = mRatingSpin->value();
+    QString description = mDescriptionEdit->toPlainText();
+    bool read = mReadCheck->isChecked();
+    QString viewRights = mViewRightsCombo->currentText();
+    int sectionId = mSectionCombo->currentData().toInt();
 
     int bookId = Database::instance().createBook(
         medium, title, author, genre, rating, description,
-        read, viewRights, m_coverData, sectionId);
+        read, viewRights, mCoverData, sectionId);
 
     if (bookId > 0) {
         QMessageBox::information(this, "Успіх", "Книгу успішно додано!");

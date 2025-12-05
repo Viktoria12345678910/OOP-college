@@ -31,14 +31,13 @@ void LoginDialog::setupUI()
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
 
+
+
     m_loginButton = new QPushButton("Увійти");
     m_loginButton->setDefault(true);
     connect(m_loginButton, &QPushButton::clicked, this, &LoginDialog::onLogin);
-    buttonLayout->addWidget(m_loginButton);
 
-    m_registerButton = new QPushButton("Реєстрація");
-    connect(m_registerButton, &QPushButton::clicked, this, &LoginDialog::onRegister);
-    buttonLayout->addWidget(m_registerButton);
+    buttonLayout->addWidget(m_loginButton);
 
     mainLayout->addLayout(buttonLayout);
 }
@@ -62,11 +61,3 @@ void LoginDialog::onLogin()
     }
 }
 
-void LoginDialog::onRegister()
-{
-    NewAccountDialog dialog(this);
-    if (dialog.exec() == QDialog::Accepted) {
-        QMessageBox::information(this, "Успіх",
-                               "Акаунт створено! Тепер ви можете увійти.");
-    }
-}

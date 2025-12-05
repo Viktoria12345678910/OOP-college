@@ -22,10 +22,10 @@ private slots:
 private:
     void setupUI();
 
-    QListWidget *m_groupsList;
-    QPushButton *m_createButton;
-    QPushButton *m_deleteButton;
-    QPushButton *m_manageMembersButton;
+    QListWidget *mGroupsList;
+    QPushButton *mCreateButton;
+    QPushButton *mDeleteButton;
+    QPushButton *mManageMembersButton;
 };
 
 #endif // GROUPMANAGERDIALOG_H

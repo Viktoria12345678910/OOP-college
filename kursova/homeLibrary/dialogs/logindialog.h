@@ -17,7 +17,6 @@ public:
 
 private slots:
     void onLogin();
-    void onRegister();
 
 private:
     void setupUI();
@@ -25,7 +24,6 @@ private:
     QLineEdit *m_usernameEdit;
     QLineEdit *m_passwordEdit;
     QPushButton *m_loginButton;
-    QPushButton *m_registerButton;
 
     QString m_username;
     int m_userId;

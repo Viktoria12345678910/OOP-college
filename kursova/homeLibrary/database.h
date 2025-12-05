@@ -26,7 +26,7 @@ public:
 
     // Section methods
     int createSection(const QString &name, const QString &abbreviation,
-                      const QString &description, const QString &path);
+                      const QString &description);
     bool updateSectionBookCount(int sectionId);
 
     // Book methods
@@ -39,8 +39,11 @@ public:
     // Group methods
     int createGroup(const QString &groupName);
     bool addUserToGroup(int userId, int groupId);
+    bool deleteBook(int bookId);
+    bool deleteSection(int bookId);
+    bool deleteUser(int bookId);
 
-    QSqlDatabase getDatabase() { return m_db; }
+    QSqlDatabase getDatabase() { return mDb; }
 
 private:
     Database();
@@ -51,7 +54,7 @@ private:
     QString hashPassword(const QString &password, const QString &salt);
     QString generateSalt();
 
-    QSqlDatabase m_db;
+    QSqlDatabase mDb;
 };
 
 #endif // DATABASE_H

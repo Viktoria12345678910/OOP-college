@@ -25,19 +25,19 @@ private:
     void setupUI();
     void loadSections();
 
-    QComboBox *m_mediumCombo;
-    QLineEdit *m_titleEdit;
-    QLineEdit *m_authorEdit;
-    QLineEdit *m_genreEdit;
-    QSpinBox *m_ratingSpin;
-    QTextEdit *m_descriptionEdit;
-    QCheckBox *m_readCheck;
-    QComboBox *m_viewRightsCombo;
-    QComboBox *m_sectionCombo;
-    QPushButton *m_coverButton;
-    QLabel *m_coverPreview;
+    QComboBox *mMediumCombo;
+    QLineEdit *mTitleEdit;
+    QLineEdit *mAuthorEdit;
+    QLineEdit *mGenreEdit;
+    QSpinBox *mRatingSpin;
+    QTextEdit *mDescriptionEdit;
+    QCheckBox *mReadCheck;
+    QComboBox *mViewRightsCombo;
+    QComboBox *mSectionCombo;
+    QPushButton *mCoverButton;
+    QLabel *mCoverPreview;
 
-    QByteArray m_coverData;
+    QByteArray mCoverData;
 };
 
 #endif // NEWBOOKDIALOG_H
