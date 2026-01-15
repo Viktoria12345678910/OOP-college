@@ -1,9 +1,8 @@
 #include "mainwindow.h"
 #include "dialogs/newbookdialog.h"
-#include "dialogs/section managerdialog.h"
+#include "dialogs/newsectiondialog.h"
 #include "dialogs/newaccountdialog.h"
 #include "dialogs/logindialog.h"
-#include "dialogs/groupmanagerdialog.h"
 #include "qapplication.h"
 #include <QMenuBar>
 #include <QMenu>
@@ -15,7 +14,7 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , mCurrentUserId(-1)
+    , mCurrentUserName("guest")
 {
     if (!Database::instance().connect()) {
         QMessageBox::critical(this, "Критична помилка",
@@ -23,17 +22,17 @@ MainWindow::MainWindow(QWidget *parent)
         QApplication::quit();
         return;
     }
+    else Database::instance().createUser("admin", "123");
 
     LoginDialog loginDialog(this);
     if (loginDialog.exec() == QDialog::Accepted) {
-        mCurrentUserId = loginDialog.userId();
-        QString username = loginDialog.username();
+        mCurrentUserName = loginDialog.username();
 
         setupUI();
         loadSections();
         loadBooks();
 
-        statusBar()->showMessage(QString("Вітаємо, %1!").arg(username));
+        statusBar()->showMessage(QString("Вітаємо, %1!").arg(mCurrentUserName));
     } else {
         QApplication::quit();
     }
@@ -66,15 +65,6 @@ void MainWindow::setupUI()
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
     fileMenu->addAction(exitAction);
 
-    QMenu *manageMenu = menuBar()->addMenu("&Управління");
-
-    QAction *manageUsersAction = new QAction("&Новий користувач", this);
-    connect(manageUsersAction, &QAction::triggered, this, &MainWindow::onNewAccount);
-    manageMenu->addAction(manageUsersAction);
-
-    QAction *manageGroupsAction = new QAction("&Групи", this);
-    connect(manageGroupsAction, &QAction::triggered, this, &MainWindow::onManageGroups);
-    manageMenu->addAction(manageGroupsAction);
 
     // Створення вкладок
     mTabWidget = new QTabWidget(this);
@@ -177,6 +167,7 @@ void MainWindow::setupUI()
 
     QWidget *usersWidget = new QWidget();
     QVBoxLayout *usersLayout = new QVBoxLayout(usersWidget);
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
     usersLayout->setContentsMargins(10, 10, 10, 10);
 
     mUsersTable = new QTableView();
@@ -201,8 +192,13 @@ void MainWindow::setupUI()
     usersLayout->addWidget(mUsersTable);
 
     mDeleteUser = new QPushButton("Видалити користувача");
+    mCreateUser = new QPushButton("Додати користувача");
     connect(mDeleteUser, &QPushButton::clicked, this, &MainWindow::onDeleteUser);
-    usersLayout->addWidget(mDeleteUser);
+    connect(mCreateUser, &QPushButton::clicked, this, &MainWindow::onNewAccount);
+
+    buttonsLayout->addWidget(mDeleteUser);
+    buttonsLayout->addWidget(mCreateUser);
+    usersLayout->addLayout(buttonsLayout);
 
     mTabWidget->addTab(usersWidget, "👤 Користувачі");
 
@@ -217,8 +213,7 @@ void MainWindow::setupUI()
     helpLayout->addWidget(mHelp);
     mTabWidget->addTab(helpWidget, "❓Допоміжна інформація");
 
-    if(mCurrentUserId != 1){
-            manageMenu->menuAction()->setVisible(false);
+    if(mCurrentUserName != "admin"){
             mTabWidget->tabBar()->setTabVisible(2, false);
     }
     statusBar()->show();
@@ -253,6 +248,7 @@ void MainWindow::loadBooks(int sectionId)
         QString("Показано книг: %1").arg(mBooksModel->rowCount()), 3000);
 }
 
+
 void MainWindow::onNewBook()
 {
     NewBookDialog dialog(this);
@@ -284,12 +280,6 @@ void MainWindow::onNewAccount()
     }
 }
 
-void MainWindow::onManageGroups()
-{
-    GroupManagerDialog dialog(this);
-    dialog.exec();
-}
-
 void MainWindow::onSectionChanged(int index)
 {
     int sectionId = mSectionFilter->itemData(index).toInt();
@@ -307,8 +297,7 @@ void MainWindow::onSearch(const QString &text)
                mBooksModel->setFilter("");
            }
        } else {
-           // Search in title, author, genre
-           QString filter = QString("(title LIKE '%%1%' OR author LIKE '%%1%' OR genre LIKE '%%1%')").arg(text);
+           QString filter = QString("(title LIKE '%%1%' OR author LIKE '%%1%' OR rating LIKE '%%1%' OR genre LIKE '%%1%')").arg(text);
 
            // Combine with section filter if selected
            if (mSectionFilter->currentIndex() > 0) {
@@ -387,8 +376,8 @@ void MainWindow::onDeleteUser()
     }
 
     int row = index.row();
-    int userId = mSectionsModel->record(row).value("user_id").toInt();
-    QString userName = mSectionsModel->record(row).value("username").toString();
+    int userId = mUsersModel->record(row).value("user_id").toInt();
+    QString userName = mUsersModel->record(row).value("username").toString();
 
     QMessageBox::StandardButton reply = QMessageBox::question(
         this, "Підтвердження",
@@ -397,10 +386,10 @@ void MainWindow::onDeleteUser()
 
     if (reply == QMessageBox::Yes) {
         if (Database::instance().deleteUser(userId)) {
-            QMessageBox::information(this, "Успіх", "Секцію видалено!");
-            mBooksModel->select();
+            QMessageBox::information(this, "Успіх", "Користувача видалено!");
+            mUsersModel->select();
         } else {
-            QMessageBox::critical(this, "Помилка", "Не вдалось видалити книгу");
+            QMessageBox::critical(this, "Помилка", "Не вдалось видалити Користувача");
         }
     }
 }

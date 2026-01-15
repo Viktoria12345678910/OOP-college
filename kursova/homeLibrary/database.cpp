@@ -81,7 +81,6 @@ bool Database::createTables()
         return false;
     }
 
-    // Create Users table
     QString createUsers = R"(
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,35 +96,8 @@ bool Database::createTables()
         qDebug() << "Error creating users table:" << query.lastError();
         return false;
     }
+    else Database::createUser("admin", "123");
 
-    // Create Groups table
-    QString createGroups = R"(
-        CREATE TABLE IF NOT EXISTS groups (
-            group_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            group_name TEXT UNIQUE NOT NULL
-        )
-    )";
-
-    if (!query.exec(createGroups)) {
-        qDebug() << "Error creating groups table:" << query.lastError();
-        return false;
-    }
-
-    // Create UserGroups junction table
-    QString createUserGroups = R"(
-        CREATE TABLE IF NOT EXISTS user_groups (
-            user_id INTEGER,
-            group_id INTEGER,
-            PRIMARY KEY (user_id, group_id),
-            FOREIGN KEY (user_id) REFERENCES users(user_id),
-            FOREIGN KEY (group_id) REFERENCES groups(group_id)
-        )
-    )";
-
-    if (!query.exec(createUserGroups)) {
-        qDebug() << "Error creating user_groups table:" << query.lastError();
-        return false;
-    }
 
     qDebug() << "All tables created successfully";
     return true;
@@ -210,26 +182,6 @@ int Database::getUserId(const QString &username)
     return -1;
 }
 
-QList<QString> Database::getUserGroups(int userId)
-{
-    QList<QString> groups;
-    QSqlQuery query;
-    query.prepare(R"(
-        SELECT g.group_name FROM groups g
-        JOIN user_groups ug ON g.group_id = ug.group_id
-        WHERE ug.user_id = ?
-    )");
-    query.addBindValue(userId);
-
-    if (query.exec()) {
-        while (query.next()) {
-            groups.append(query.value(0).toString());
-        }
-    }
-
-    return groups;
-}
-
 int Database::createSection(const QString &name, const QString &abbreviation,
                             const QString &description)
 {
@@ -294,30 +246,6 @@ int Database::createBook(const QString &medium, const QString &title,
 
     updateSectionBookCount(sectionId);
     return query.lastInsertId().toInt();
-}
-
-int Database::createGroup(const QString &groupName)
-{
-    QSqlQuery query;
-    query.prepare("INSERT INTO groups (group_name) VALUES (?)");
-    query.addBindValue(groupName);
-
-    if (!query.exec()) {
-        qDebug() << "Error creating group:" << query.lastError();
-        return -1;
-    }
-
-    return query.lastInsertId().toInt();
-}
-
-bool Database::addUserToGroup(int userId, int groupId)
-{
-    QSqlQuery query;
-    query.prepare("INSERT INTO user_groups (user_id, group_id) VALUES (?, ?)");
-    query.addBindValue(userId);
-    query.addBindValue(groupId);
-
-    return query.exec();
 }
 
 bool Database::deleteBook(int bookId)

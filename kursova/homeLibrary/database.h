@@ -22,7 +22,6 @@ public:
     bool createUser(const QString &username, const QString &password);
     bool authenticateUser(const QString &username, const QString &password);
     int getUserId(const QString &username);
-    QList<QString> getUserGroups(int userId);
 
     // Section methods
     int createSection(const QString &name, const QString &abbreviation,
@@ -36,9 +35,6 @@ public:
                    bool read, const QString &viewRights,
                    const QByteArray &cover, int sectionId);
 
-    // Group methods
-    int createGroup(const QString &groupName);
-    bool addUserToGroup(int userId, int groupId);
     bool deleteBook(int bookId);
     bool deleteSection(int bookId);
     bool deleteUser(int bookId);

@@ -26,7 +26,6 @@ private slots:
     void onNewSection();
     void onNewAccount();
     void onSectionChanged(int index);
-    void onManageGroups();
     void onSearch(const QString &text);
     void onDeleteBook();
     void onDeleteSection();
@@ -36,6 +35,7 @@ private:
     void setupUI();
     void loadSections();
     void loadBooks(int sectionId = -1);
+    void loadUsers();
 
     QTabWidget *mTabWidget;
     QTableView *mBooksTable;
@@ -50,9 +50,10 @@ private:
     QPushButton *mDeleteBook;
     QPushButton *mDeleteSection;
     QPushButton *mDeleteUser;
+    QPushButton *mCreateUser;
 
 
-    int mCurrentUserId;
+    QString mCurrentUserName;
 };
 
 #endif // MAINWINDOW_H

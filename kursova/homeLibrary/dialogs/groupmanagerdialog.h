@@ -25,7 +25,6 @@ private:
     QListWidget *mGroupsList;
     QPushButton *mCreateButton;
     QPushButton *mDeleteButton;
-    QPushButton *mManageMembersButton;
 };
 
 #endif // GROUPMANAGERDIALOG_H
