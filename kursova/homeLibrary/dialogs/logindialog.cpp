@@ -48,7 +48,7 @@ void LoginDialog::onLogin()
     QString password = m_passwordEdit->text();
 
     if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "Помилка", "Заповніть всі поля!");
+        QMessageBox::warning(this, "Помилка", "Заповніть всі поля");
         return;
     }
 
@@ -57,7 +57,7 @@ void LoginDialog::onLogin()
         m_userId = Database::instance().getUserId(username);
         accept();
     } else {
-        QMessageBox::warning(this, "Помилка", "Невірне ім'я користувача або пароль!");
+        QMessageBox::warning(this, "Помилка", "Невірне ім'я користувача або пароль");
     }
 }
 
