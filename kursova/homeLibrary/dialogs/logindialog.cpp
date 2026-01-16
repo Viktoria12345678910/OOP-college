@@ -14,18 +14,18 @@ LoginDialog::LoginDialog(QWidget *parent)
 
 void LoginDialog::setupUI()
 {
-    setWindowTitle("Вхід до системи");
+    setWindowTitle(tr("Вхід до системи"));
     setMinimumWidth(350);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QFormLayout *formLayout = new QFormLayout();
 
     m_usernameEdit = new QLineEdit();
-    formLayout->addRow("Ім'я користувача:", m_usernameEdit);
+    formLayout->addRow(tr("Ім'я користувача:"), m_usernameEdit);
 
     m_passwordEdit = new QLineEdit();
     m_passwordEdit->setEchoMode(QLineEdit::Password);
-    formLayout->addRow("Пароль:", m_passwordEdit);
+    formLayout->addRow(tr("Пароль:"), m_passwordEdit);
 
     mainLayout->addLayout(formLayout);
 
@@ -33,7 +33,7 @@ void LoginDialog::setupUI()
 
 
 
-    m_loginButton = new QPushButton("Увійти");
+    m_loginButton = new QPushButton(tr("Увійти"));
     m_loginButton->setDefault(true);
     connect(m_loginButton, &QPushButton::clicked, this, &LoginDialog::onLogin);
 
@@ -48,7 +48,7 @@ void LoginDialog::onLogin()
     QString password = m_passwordEdit->text();
 
     if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "Помилка", "Заповніть всі поля");
+        QMessageBox::warning(this, tr("Помилка"), tr("Заповніть всі поля"));
         return;
     }
 
@@ -57,7 +57,7 @@ void LoginDialog::onLogin()
         m_userId = Database::instance().getUserId(username);
         accept();
     } else {
-        QMessageBox::warning(this, "Помилка", "Невірне ім'я користувача або пароль");
+        QMessageBox::warning(this, tr("Помилка"), tr("Невірне ім'я користувача або пароль"));
     }
 }
 

@@ -9,6 +9,7 @@
 #include <QBuffer>
 #include <QPixmap>
 #include <QSqlQuery>
+#include <QTranslator>
 
 NewBookDialog::NewBookDialog(QWidget *parent)
     : QDialog(parent)
@@ -19,7 +20,7 @@ NewBookDialog::NewBookDialog(QWidget *parent)
 
 void NewBookDialog::setupUI()
 {
-    setWindowTitle("Додати нову книгу");
+    setWindowTitle(tr("Додати нову книгу"));
     setMinimumWidth(500);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -27,48 +28,43 @@ void NewBookDialog::setupUI()
 
     // Тип носія
     mMediumCombo = new QComboBox();
-    mMediumCombo->addItems({"Паперова", "Електронна", "Аудіокнига"});
-    formLayout->addRow("Тип носія:", mMediumCombo);
+    mMediumCombo->addItems({tr("Паперова"), tr("Електронна"), tr("Аудіокнига")});
+    formLayout->addRow(tr("Тип носія:"), mMediumCombo);
 
     // Назва
     mTitleEdit = new QLineEdit();
-    formLayout->addRow("Назва*:", mTitleEdit);
+    formLayout->addRow(tr("Назва*:"), mTitleEdit);
 
     // Автор
     mAuthorEdit = new QLineEdit();
-    formLayout->addRow("Автор:", mAuthorEdit);
+    formLayout->addRow(tr("Автор:"), mAuthorEdit);
 
     // Жанр
     mGenreEdit = new QLineEdit();
-    formLayout->addRow("Жанр:", mGenreEdit);
+    formLayout->addRow(tr("Жанр:"), mGenreEdit);
 
     // Рейтинг
     mRatingSpin = new QSpinBox();
     mRatingSpin->setRange(1, 5);
     mRatingSpin->setValue(3);
-    formLayout->addRow("Рейтинг:", mRatingSpin);
+    formLayout->addRow(tr("Рейтинг:"), mRatingSpin);
 
     // Опис
     mDescriptionEdit = new QTextEdit();
     mDescriptionEdit->setMaximumHeight(100);
-    formLayout->addRow("Опис:", mDescriptionEdit);
+    formLayout->addRow(tr("Опис:"), mDescriptionEdit);
 
     // Прочитано
-    mReadCheck = new QCheckBox("Прочитано");
+    mReadCheck = new QCheckBox(tr("Прочитано"));
     formLayout->addRow("", mReadCheck);
-
-    // Права перегляду
-    mViewRightsCombo = new QComboBox();
-    mViewRightsCombo->addItems({"Всі", "Тільки я", "Вибрати групу"});
-    formLayout->addRow("Права перегляду:", mViewRightsCombo);
 
     // Секція
     mSectionCombo = new QComboBox();
-    formLayout->addRow("Секція*:", mSectionCombo);
+    formLayout->addRow(tr("Секція*:"), mSectionCombo);
 
     // Обкладинка
     QHBoxLayout *coverLayout = new QHBoxLayout();
-    mCoverButton = new QPushButton("Вибрати обкладинку");
+    mCoverButton = new QPushButton(tr("Вибрати обкладинку"));
     connect(mCoverButton, &QPushButton::clicked, this, &NewBookDialog::onSelectCover);
     coverLayout->addWidget(mCoverButton);
 
@@ -79,7 +75,7 @@ void NewBookDialog::setupUI()
     coverLayout->addWidget(mCoverPreview);
     coverLayout->addStretch();
 
-    formLayout->addRow("Обкладинка:", coverLayout);
+    formLayout->addRow(tr("Обкладинка:"), coverLayout);
 
     mainLayout->addLayout(formLayout);
 
@@ -104,7 +100,7 @@ void NewBookDialog::loadSections()
 void NewBookDialog::onSelectCover()
 {
     QString fileName = QFileDialog::getOpenFileName(
-        this, "Вибрати обкладинку", "", "Зображення (*.png *.jpg *.jpeg)");
+        this, tr("Вибрати обкладинку"), "", tr("Зображення (*.png *.jpg *.jpeg)"));
 
     if (!fileName.isEmpty()) {
         QPixmap pixmap(fileName);
@@ -121,12 +117,12 @@ void NewBookDialog::onSelectCover()
 void NewBookDialog::onSave()
 {
     if (mTitleEdit->text().isEmpty()) {
-        QMessageBox::warning(this, "Помилка", "Назва книги обов'язкова!");
+        QMessageBox::warning(this, tr("Помилка"), tr("Назва книги обов'язкова!"));
         return;
     }
 
     if (mSectionCombo->currentIndex() == -1) {
-        QMessageBox::warning(this, "Помилка", "Оберіть секцію!");
+        QMessageBox::warning(this, tr("Помилка"), tr("Оберіть секцію!"));
         return;
     }
 
@@ -145,9 +141,9 @@ void NewBookDialog::onSave()
         read, viewRights, mCoverData, sectionId);
 
     if (bookId > 0) {
-        QMessageBox::information(this, "Успіх", "Книгу успішно додано!");
+        QMessageBox::information(this, tr("Успіх"), tr("Книгу успішно додано!"));
         accept();
     } else {
-        QMessageBox::critical(this, "Помилка", "Не вдалось додати книгу!");
+        QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось додати книгу!"));
     }
 }

@@ -33,6 +33,8 @@ HEADERS += \
     models/section.h \
     models/user.h
 
+TRANSLATIONS = eng.ts ua.ts
+
 FORMS += \
     mainwindow.ui
 

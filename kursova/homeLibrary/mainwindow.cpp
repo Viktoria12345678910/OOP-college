@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QTranslator>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     if (loginDialog.exec() == QDialog::Accepted) {
         mCurrentUserName = loginDialog.username();
         ui->setupUi(this);
+
         setupUI();
         loadSections();
         loadBooks();
@@ -47,7 +49,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupUI()
 {
-    setWindowTitle("Картотека домашньої бібліотеки");
+    setWindowTitle("Читацький щоденник");
     resize(1200, 700);
 
     ui->newBookAction->setShortcut(QKeySequence::New);
@@ -63,15 +65,15 @@ void MainWindow::setupUI()
     setCentralWidget(ui->tabs);
 
 
-
     ui->filterLabel->setStyleSheet("font-weight: bold;");
     ui->cbSection->setMinimumWidth(200);
-    connect(mSectionFilter, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &MainWindow::onSectionChanged);
+    connect(ui->cbSection, QOverload<int>::of(&QComboBox::currentIndexChanged),this, &MainWindow::onSectionChanged);
 
     ui->filterLayout->addStretch();
 
+
     ui->searchBar->setPlaceholderText("Пошук книг...");
+
     ui->searchBar->setMaximumWidth(300);
     connect(ui->searchBar, &QLineEdit::textChanged, this, &MainWindow::onSearch);
 
@@ -112,6 +114,7 @@ void MainWindow::setupUI()
     mSectionsModel->setHeaderData(5, Qt::Horizontal, "Кількість книг");
     mSectionsModel->setHeaderData(6, Qt::Horizontal, "Групи які мають доступ");
     mSectionsModel->select();
+
 
     ui->SectionsTable->setModel(mSectionsModel);
     ui->SectionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);

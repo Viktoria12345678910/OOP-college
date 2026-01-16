@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,11 @@ int main(int argc, char *argv[])
             a.setStyleSheet(style);
             styleFile.close();
         }
+    QTranslator translator;
+    if(translator.load("eng.qm"))
+        a.installTranslator(&translator);
+
+
     MainWindow w;
     w.show();
     return a.exec();

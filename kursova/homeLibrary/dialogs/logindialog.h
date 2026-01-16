@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QTranslator>
 
 class LoginDialog : public QDialog
 {

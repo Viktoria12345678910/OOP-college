@@ -14,7 +14,7 @@ NewSectionDialog::NewSectionDialog(QWidget *parent)
 
 void NewSectionDialog::setupUI()
 {
-    setWindowTitle("Додати нову секцію");
+    setWindowTitle(tr("Додати нову секцію"));
     setMinimumWidth(500);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -22,22 +22,22 @@ void NewSectionDialog::setupUI()
 
     // Назва
     mName = new QLineEdit();
-    formLayout->addRow("Назва*:", mName);
+    formLayout->addRow(tr("Назва*:"), mName);
 
     // Скорочення
     mAbbreviation = new QLineEdit();
-    formLayout->addRow("Скорочення:", mAbbreviation);
+    formLayout->addRow(tr("Скорочення:"), mAbbreviation);
 
     // Опис
     mDescription = new QTextEdit();
     mDescription->setMaximumHeight(100);
-    formLayout->addRow("Опис:", mDescription);
+    formLayout->addRow(tr("Опис:"), mDescription);
 
     // Кількість книг
     mBookCount = new QLineEdit();
     mBookCount->setReadOnly(true);
     mBookCount->setText("0");
-    formLayout->addRow("Кількість книг:", mBookCount);
+    formLayout->addRow(tr("Кількість книг:"), mBookCount);
 
     mainLayout->addLayout(formLayout);
 
@@ -53,7 +53,7 @@ void NewSectionDialog::setupUI()
 void NewSectionDialog::onSave()
 {
     if (mName->text().isEmpty()) {
-        QMessageBox::warning(this, "Помилка", "Назва секції обов'язкова!");
+        QMessageBox::warning(this, tr("Помилка"), tr("Назва секції обов'язкова!"));
         return;
     }
 
@@ -65,9 +65,9 @@ void NewSectionDialog::onSave()
         name, abbreviation, description);
 
     if (sectionId > 0) {
-        QMessageBox::information(this, "Успіх", "Секцію успішно додано!");
+        QMessageBox::information(this, tr("Успіх"), tr("Секцію успішно додано!"));
         accept();
     } else {
-        QMessageBox::critical(this, "Помилка", "Не вдалось додати секцію!");
+        QMessageBox::critical(this, tr("Помилка"), tr("Не вдалось додати секцію!"));
     }
 }
